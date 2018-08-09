@@ -5,6 +5,19 @@
     <UserSecretsId>aspnet-SocialNet-2818241D-E41B-4D9C-8099-4432496F304F</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20180809090116_CreatePostsSchema.cs" />
+    <Compile Remove="Data\Migrations\20180809090116_CreatePostsSchema.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180809091246_CreateUsersSchema.cs" />
+    <Compile Remove="Data\Migrations\20180809091246_CreateUsersSchema.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180809091717_CreateUsersSchema.cs" />
+    <Compile Remove="Data\Migrations\20180809091717_CreateUsersSchema.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180809091850_CreateUsersSchema.cs" />
+    <Compile Remove="Data\Migrations\20180809091850_CreateUsersSchema.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180809091937_CreatePostsSchema.cs" />
+    <Compile Remove="Data\Migrations\20180809091937_CreatePostsSchema.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />

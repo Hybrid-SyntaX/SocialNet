@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SocialNet.Data;
 using SocialNet.Models;
 using SocialNet.Services;
+using SocialNet.Data.Interfaces;
 
 namespace SocialNet
 {
@@ -35,6 +36,22 @@ namespace SocialNet
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<IPostRepository, PostRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+
+            var simplePasswordPolicy = new PasswordOptions()
+            {
+                RequireDigit = false,
+                RequiredLength = 5,
+                RequireLowercase = false,
+                RequiredUniqueChars = 0,
+                RequireNonAlphanumeric = false,
+                RequireUppercase = false
+            };
+
+            services.Configure<IdentityOptions>(options =>
+                    options.Password = simplePasswordPolicy);
+
 
             services.AddMvc();
         }
