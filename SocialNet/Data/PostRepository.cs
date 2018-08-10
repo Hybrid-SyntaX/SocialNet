@@ -19,17 +19,13 @@ namespace SocialNet.Data
         public async Task<Post> CreatePostAsync(Post post)
         {
             post.Id = Guid.NewGuid();
+            post.LastUpdated = DateTime.Now;
+            post.Created = DateTime.Now;
             _context.Add(post);
             await _context.SaveChangesAsync();
             return post;
         }
-        public Post CreatePost(Post post)
-        {
-            post.Id = Guid.NewGuid();
-            _context.Add(post);
-            _context.SaveChanges();
-            return post;
-        }
+
         public async Task<IEnumerable<Post>> GetPostsAsync()
             => await _context.Posts.Include(p => p.OriginalPoster).ToListAsync();
 

@@ -22,38 +22,6 @@ namespace SocialNet.Tests
 
 
         [Test]
-        public async Task Post_CanBeSavedInDB_UserIsStoredInDB()
-        {
-            //Arrange
-            createUser();
-
-            //Act
-            string postId = null;
-            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
-            {
-                var user = context.Users.Single();
-                var postRepository = new PostRepository(context);
-                var post = new Post
-                {
-                    Title = "post",
-                    Content = "post",
-                    OriginalPoster = user
-                };
-                await postRepository.CreatePostAsync(post);
-                postId = post.Id.ToString();
-            }
-
-            //Assert
-            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
-            {
-                Assert.AreEqual(1, context.Posts.Count());
-                Assert.AreEqual("post", context.Posts.Single().Title);
-                Assert.That(context.Posts.Single().Id.ToString(), Is.EqualTo(postId.ToString()));
-            }
-        }
-
-
-        [Test]
         public async Task Index_ReturnsAViewResult_WithAList()
         {
             //Arrange
@@ -69,7 +37,7 @@ namespace SocialNet.Tests
                         Content = "post",
                         OriginalPoster = user
                     };
-                    postRepository.CreatePost(post);
+                    await postRepository.CreatePostAsync(post);
                 }
 
 
@@ -139,11 +107,12 @@ namespace SocialNet.Tests
             }
 
             using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
+            {
                 Assert.That(context.Posts.Count(), Is.EqualTo(1));
 
+            }
+
         }
-
-
 
         public void createUser()
         {

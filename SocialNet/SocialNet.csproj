@@ -16,6 +16,8 @@
     <Compile Remove="Data\Migrations\20180809091850_CreateUsersSchema.Designer.cs" />
     <Compile Remove="Data\Migrations\20180809091937_CreatePostsSchema.cs" />
     <Compile Remove="Data\Migrations\20180809091937_CreatePostsSchema.Designer.cs" />
+    <Compile Remove="Data\Migrations\20180810070738_ModifyPostsSchema.cs" />
+    <Compile Remove="Data\Migrations\20180810070738_ModifyPostsSchema.Designer.cs" />
   </ItemGroup>
 
 
@@ -26,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.2" />
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.1" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />

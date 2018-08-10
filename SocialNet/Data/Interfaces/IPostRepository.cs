@@ -9,7 +9,6 @@ namespace SocialNet.Data.Interfaces
     public interface IPostRepository
     {
         Task<Post> CreatePostAsync(Post post);
-        Post CreatePost(Post post);
         Task<IEnumerable<Post>> GetPostsAsync();
     }
 }

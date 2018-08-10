@@ -33,6 +33,12 @@ namespace SocialNet.Tests
         }
 
         internal void Close() => connection.Close();
+
+        //public void Dispose()
+        //{
+        //    Close();
+        //}
+
         ~InMemoryDatabaseHelper()
         {
             connection.Close();

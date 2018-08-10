@@ -32,7 +32,7 @@ namespace SocialNet.Controllers
             _postRepository = postRepository;
         }
 
-      
+
         // GET: Posts
         public async Task<IActionResult> Index()
         {
@@ -56,7 +56,7 @@ namespace SocialNet.Controllers
 
             return View(post);
         }
-      
+
         // GET: Posts/Create
         [Authorize]
         public IActionResult Create()
@@ -71,14 +71,20 @@ namespace SocialNet.Controllers
         [Authorize, HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Content")] Post post)
         {
-            if (ModelState.IsValid)
+            //if (ModelState.IsValid)
+            //{
+            post.OriginalPoster = await userRepository?.GetUserAsync(HttpContext?.User);
+            if (post.OriginalPoster == null) return Unauthorized();
+            try
             {
-                post.OriginalPoster = await userRepository?.GetUserAsync(HttpContext?.User);
                 await _postRepository.CreatePostAsync(post);
-
                 return RedirectToAction(nameof(Index));
             }
-            return View(post);
+            catch
+            {
+                return View(post);
+
+            }
         }
 
         //[HttpPost, ValidateAntiForgeryToken]
@@ -180,6 +186,6 @@ namespace SocialNet.Controllers
             return _context.Posts.Any(e => e.Id == id);
         }
 
-  
+
     }
 }

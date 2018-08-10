@@ -10,10 +10,16 @@ namespace SocialNet.Models
     public class Post
     {
         [Key] public Guid Id { set; get; }
-        public string Title { set; get; }
-        public string Content { set; get; }
+        [Required] public string Title { set; get; }
+        [Required] public string Content { set; get; }
 
-        [ForeignKey(nameof(OriginalPoster) + "Id")]
+        [Required]
         public ApplicationUser OriginalPoster { set; get; }
+
+        [Required] public int Score { set; get; }
+
+        [Required] public DateTime Created { set; get; }
+        [Required] public DateTime LastUpdated { set; get; }
+
     }
 }
