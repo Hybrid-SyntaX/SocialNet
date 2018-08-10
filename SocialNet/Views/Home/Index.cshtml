@@ -7,14 +7,18 @@
 <h2>Index</h2>
 
 
-<ul>
+<ul class="title is-parent is-vertical">
     @foreach (var item in Model)
     {
-        <li>
-            <a asp-action="Details" asp-controller="Posts" asp-route-id="@item.Id">
-                @Html.DisplayFor(modelItem => item.Title)
-            </a>
-            <span>from: @Html.DisplayFor(modelItem => item.OriginalPoster.UserName)</span>
+        <li class="tile is-child notification">
+            <p class="title">
+                <a asp-action="Details" asp-controller="Posts" asp-route-id="@item.Id" class="is-link">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </a>
+            </p>
+            <p class="subtitle">
+                <span class="tag is-white is-rounded">from: @Html.DisplayFor(modelItem => item.OriginalPoster.UserName)</span>
+            </p>
         </li>
     }
 </ul>
