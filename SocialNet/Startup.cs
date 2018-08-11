@@ -35,7 +35,14 @@ namespace SocialNet
                 .AddDefaultTokenProviders();
 
             // Add application services.
+
+            //services.AddTransient<DbContext, ApplicationDbContext>(); //TODO: Workaround?
             services.AddTransient<IEmailSender, EmailSender>();
+
+            //services.AddScoped<DbContext, ApplicationDbContext>();
+            services.AddTransient<IRepository<Post>, Repository<Post>>();
+            services.AddScoped<DbContext, ApplicationDbContext>(provider=>provider.GetService<ApplicationDbContext>());
+
             services.AddTransient<IPostRepository, PostRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
 

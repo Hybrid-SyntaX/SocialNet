@@ -19,24 +19,29 @@ namespace SocialNet.Controllers
         private readonly IUserRepository userRepository;
 
         //private readonly UserManager<ApplicationUser> _usersManager;
-        private readonly IPostRepository _postRepository;
+        private readonly IRepository<Post> repository;
+        //private readonly IPostRepository _postRepository;
 
         public PostsController(ApplicationDbContext context,
             IUserRepository userRepository,
-            IPostRepository postRepository)
+            //IPostRepository postRepository
+            IRepository<Post> postRepository
+            )
         {
             _context = context;
             this.userRepository = userRepository;
             ///TODO: Replace with IUserRepoisotry
             //_usersManager = userRepository;
-            _postRepository = postRepository;
+            repository = postRepository;
         }
 
 
         // GET: Posts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Posts.ToListAsync());
+            var posts = await repository.ReadAll().ToListAsync();
+            //var posts = await _context.Posts.ToListAsync();
+            return View(posts);
         }
 
         // GET: Posts/Details/5
@@ -47,8 +52,7 @@ namespace SocialNet.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .SingleOrDefaultAsync(m => m.Id == id);
+            var post = await repository.ReadAsync(id);
             if (post == null)
             {
                 return NotFound();
@@ -77,13 +81,18 @@ namespace SocialNet.Controllers
             if (post.OriginalPoster == null) return Unauthorized();
             try
             {
-                await _postRepository.CreatePostAsync(post);
+                post.Id = Guid.NewGuid();
+                post.LastUpdated = DateTime.Now;
+                post.Created = DateTime.Now;
+
+                await repository.CreateAsync(post);
+                //await _postRepository.CreatePostAsync(post);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
+ 
                 return View(post);
-
             }
         }
 

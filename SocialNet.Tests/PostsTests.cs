@@ -46,7 +46,9 @@ namespace SocialNet.Tests
                 // Act
                 var postsController = new PostsController(context,
                     new Mock<IUserRepository>().Object,
-                    new PostRepository(context));
+                    //new PostRepository(context)
+                    new Repository<Post>(context)
+                    );
                 var result = await postsController.Index();
 
                 // Assert
@@ -64,6 +66,57 @@ namespace SocialNet.Tests
             }
 
 
+
+        }
+
+
+        [Test]
+        public async Task PostController_Details_WithId_ReturnsPost()
+        {
+            ApplicationUser user = null;
+            Post post = null;
+            //Arrange
+            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
+            {
+                FluentData fluentData = new FluentData(context);
+
+                //create user
+                user = fluentData.Generate<ApplicationUser>();
+                await fluentData.SaveAsync(user);
+                post = fluentData.Generate<Post>();
+
+                //create post
+                post.OriginalPoster = user;
+                await fluentData.SaveAsync(post);
+            }
+
+            //Act
+            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
+            {
+                //Create UserRepo mock
+                var userRepoMock = new Mock<IUserRepository>();
+                userRepoMock.Setup(repo => repo.GetUserAsync(ClaimsPrincipal.Current))
+                    .Returns(Task.FromResult(user));
+
+                var postsController = new PostsController(context,
+                    userRepoMock.Object,
+                    new Repository<Post>(context));
+
+                var result = await postsController.Details(post.Id);
+
+                //Assert
+                Assert.IsInstanceOf<ViewResult>(result);
+                var viewResult = result as ViewResult;
+
+                //IsAssignableFrom
+                Assert.IsInstanceOf<Post>(viewResult.ViewData.Model);
+                var model = viewResult.ViewData.Model;
+                Assert.That(model, Is.InstanceOf<Post>());
+                var readPost = model as Post;
+
+                Assert.AreEqual(readPost.Id, post.Id);
+                Assert.That(readPost.Title, Is.EqualTo(post.Title));
+            }
 
         }
 
@@ -85,7 +138,8 @@ namespace SocialNet.Tests
 
                 var postsController = new PostsController(context,
                     userRepoMock.Object,
-                    new PostRepository(context));
+                    new Repository<Post>(context)
+                    );
 
                 Assert.That((await userRepoMock.Object.GetUserAsync(ClaimsPrincipal.Current)).Id, Is.EqualTo(user.Id));
                 var result = await postsController.Create(new Post()

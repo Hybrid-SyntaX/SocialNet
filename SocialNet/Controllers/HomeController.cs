@@ -11,15 +11,15 @@ namespace SocialNet.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPostRepository _postRepository;
+        private readonly IRepository<Post> _postRepository;
 
-        public HomeController(IPostRepository postRepository)
+        public HomeController(IRepository<Post> postRepository)
         {
             this._postRepository = postRepository;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var posts = await _postRepository.GetPostsAsync();
+            var posts = _postRepository.ReadAll();
             return View(posts);
             //return Json(posts);
         }
