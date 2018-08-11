@@ -39,7 +39,7 @@ namespace SocialNet.Controllers
         // GET: Posts
         public async Task<IActionResult> Index()
         {
-            var posts = await repository.ReadAll().ToListAsync();
+            var posts = await repository.ReadAll().Include(p => p.OriginalPoster).ToListAsync();
             //var posts = await _context.Posts.ToListAsync();
             return View(posts);
         }
@@ -52,7 +52,10 @@ namespace SocialNet.Controllers
                 return NotFound();
             }
 
-            var post = await repository.ReadAsync(id);
+            var posts = repository.ReadAll().Include(p => p.OriginalPoster);
+            //_context.Set<Post>().Include
+            //var post = await repository.ReadAsync(id);
+            var post = await posts.SingleOrDefaultAsync(p => p.Id == id);
             if (post == null)
             {
                 return NotFound();
@@ -73,26 +76,34 @@ namespace SocialNet.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize, HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content")] Post post)
+        public async Task<IActionResult> Create([Bind("Id,Title,Content", "OriginalPoster")] Post post)
         {
-            //if (ModelState.IsValid)
+
+            //try
             //{
-            post.OriginalPoster = await userRepository?.GetUserAsync(HttpContext?.User);
-            if (post.OriginalPoster == null) return Unauthorized();
-            try
+            //ModelState.MarkFieldValid(nameof(post.OriginalPoster));
+
+            //OriginalPoster is set manually
+            ModelState.Remove(nameof(post.OriginalPoster));
+
+            if (ModelState.IsValid)
             {
-                post.Id = Guid.NewGuid();
+
+                post.OriginalPoster = await userRepository?.GetUserAsync(HttpContext?.User);
+                if (post.OriginalPoster == null) return Unauthorized();
+
                 post.LastUpdated = DateTime.Now;
                 post.Created = DateTime.Now;
-
                 await repository.CreateAsync(post);
                 //await _postRepository.CreatePostAsync(post);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            //}
+            //catch
+            else
             {
- 
-                return View(post);
+                return Json(ModelState);
+                //return View(post);
             }
         }
 

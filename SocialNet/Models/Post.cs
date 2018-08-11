@@ -13,7 +13,7 @@ namespace SocialNet.Models
         [Required] public string Title { set; get; }
         [Required] public string Content { set; get; }
 
-        [Required, ForeignKey(nameof(OriginalPoster) + "Id")]
+        [ForeignKey(nameof(OriginalPoster) + "Id"), Required]
         public virtual ApplicationUser OriginalPoster { set; get; }
 
         [Required] public int Score { set; get; }

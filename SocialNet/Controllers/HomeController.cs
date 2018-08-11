@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SocialNet.Data.Interfaces;
 using SocialNet.Models;
 
@@ -19,7 +20,7 @@ namespace SocialNet.Controllers
         }
         public IActionResult Index()
         {
-            var posts = _postRepository.ReadAll();
+            var posts = _postRepository.ReadAll().Include(p=>p.OriginalPoster);
             return View(posts);
             //return Json(posts);
         }
