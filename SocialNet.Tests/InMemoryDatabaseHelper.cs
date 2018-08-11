@@ -20,7 +20,7 @@ namespace SocialNet.Tests
             // In-memory database only exists while the connection is open
             connection = new SqliteConnection("DataSource=:memory:");
             Connection.Open();
-
+            
             options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseSqlite(Connection)
                 .Options;

@@ -5,6 +5,7 @@ using SocialNet.Models;
 using SocialNet.Util;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,8 +13,16 @@ namespace SocialNet.Tests
 {
     public class FluentData
     {
-        private readonly ApplicationDbContext _context;
+        private readonly DbContext _context;
 
+
+        public class SampleEntity
+        {
+            [Key] public Guid Id { set; get; }
+            public string StringField { set; get; }
+            public int IntegerField { set; get; }
+            public DateTime DateTimeField { set; get; }
+        }
         //public class FluentData
         //{
         //    public async Task<FluentData> Generate<T>(out T instance)
@@ -33,35 +42,45 @@ namespace SocialNet.Tests
         //        return await generateUserAsync(createRecord);
         //    }
         //};
-        public FluentData(ApplicationDbContext context)
+        public FluentData(DbContext context)
         {
             this._context = context;
         }
+        public FluentData()
+        {
 
+        }
+        public IEnumerable<T> GenerateSequence<T>(int count)
+        {
+            for (int i = 0; i < count; i++)
+                yield return Generate<T>();
+        }
+        public async Task SaveAsync<T>(IEnumerable<T> sequence) where T : class
+        {
+            var memoryDb = new InMemoryDatabaseHelper();
+            await _context.Set<T>().AddRangeAsync(sequence);
+            await _context.SaveChangesAsync();
+        }
         public T Generate<T>()
         {
 
             object instance = default(T);
             if (typeof(T) == typeof(Post)) instance = generatePost();
             else if (typeof(T) == typeof(ApplicationUser)) instance = generateUser();
+            else if (typeof(T) == typeof(SampleEntity)) instance = generateSampleEntity();
 
             return (T)instance;
         }
-        public async Task SaveAsync<T>(T instance)
+        public async Task SaveAsync<T>(T instance) where T : class
         {
-            if (typeof(T) == typeof(Post))
-            {
-                var memoryDb = new InMemoryDatabaseHelper();
-                PostRepository postRepository = new PostRepository(_context);
-                await postRepository.CreatePostAsync(instance as Post);
-            }
-            else if (typeof(T) == typeof(ApplicationUser))
-            {
-                _context.Users.Add(instance as ApplicationUser);
-                await _context.SaveChangesAsync();
-            }
+            _context.Set<T>().Add(instance);
+            await _context.SaveChangesAsync();
         }
-
+        public void Save<T>(T instance) where T : class
+        {
+            _context.Set<T>().Add(instance);
+            _context.SaveChanges();
+        }
         private Post generatePost() => new Post()
         {
             Title = Randomness.RandomAlphaspacename(10),
@@ -74,9 +93,13 @@ namespace SocialNet.Tests
             UserName = Randomness.RandomAlphanumericName(10),
             Email = Randomness.Email(10),
             PasswordHash = Randomness.RandomString(50),
-            //PasswordHash = "AQAAAAEAACcQAAAAEFh/coFuoWdVhkx5JuZPBAreeKiY0xJ1SzCvt60S/XZykPPgPjj+gNnF0WeM7YbL2w=="
         };
-
+        private SampleEntity generateSampleEntity() => new SampleEntity()
+        {
+            StringField = Randomness.RandomString(10),
+            IntegerField = Randomness.SuperRandom.Next(),
+            DateTimeField = Randomness.RandomDate(),
+        };
 
     }
 }

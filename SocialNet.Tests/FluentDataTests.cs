@@ -79,8 +79,6 @@ namespace SocialNet.Tests
 
             }
         }
-
-
         [Test]
         public async Task SaveAsync_WithPost_StoresPostInDB()
         {
@@ -106,6 +104,37 @@ namespace SocialNet.Tests
             {
                 Assert.That(context.Posts.Count(), Is.EqualTo(1));
 
+            }
+        }
+
+        [Test]
+        public void GenerateSequence_WithCount_ReturnsListOfSameCount()
+        {
+            //Arrange
+            FluentData fluentData = new FluentData();
+            //Act
+            var sequence = fluentData.GenerateSequence<FluentData.SampleEntity>(5);
+
+            //Assert
+            Assert.That(sequence.Count(), Is.EqualTo(5));
+        }
+        [Test]
+        public async Task SaveAsync_WithSequence_StoresInDB()
+        {
+            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
+            {
+                //Arrange
+                FluentData fluentData = new FluentData(context);
+                var sequence = fluentData.GenerateSequence<ApplicationUser>(5);
+
+                //Act
+                await fluentData.SaveAsync(sequence);
+            }
+
+            //Assert
+            using (var context = new ApplicationDbContext(inMemoryDatabaseHelper.Options))
+            {
+                Assert.That(context.Set<ApplicationUser>().Count(), Is.EqualTo(5));
             }
         }
     }
